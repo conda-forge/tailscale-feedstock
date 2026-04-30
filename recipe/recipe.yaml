@@ -1,0 +1,64 @@
+context:
+  version: "1.96.4"
+
+package:
+  name: tailscale
+  version: ${{ version }}
+
+source:
+  - url: https://github.com/tailscale/tailscale/archive/refs/tags/v${{ version }}.tar.gz
+    sha256: 57b70731af7ae0ed167519924905fd032ddd8559a65bc8a3329d9da495f0feb2
+
+build:
+  number: 0
+  script:
+    interpreter: nu
+    content:
+      - let version_git_hash = http get https://api.github.com/repos/tailscale/tailscale/commits/v${{ version }} | get sha
+      - let version_short = "${{ version }}"
+      - let version_long = $version_short + "-t" + ($version_git_hash | str substring 0..8)
+      - let ldflags = $"-X tailscale.com/version.longStamp=($version_long) -X tailscale.com/version.shortStamp=($version_short) -X tailscale.com/version.gitCommitStamp=($version_git_hash)"
+      - if: unix
+        then: let target_directory = ($env.PREFIX)/bin/
+        else: let target_directory = ($env.LIBRARY_BIN)/
+      - go build -v -buildvcs=false -ldflags $ldflags -o $target_directory ./cmd/tailscale
+      - if: unix
+        then:
+          - mkdir ($env.PREFIX)/share/bash-completion/completions ($env.PREFIX)/share/zsh/site-functions ($env.PREFIX)/share/fish/vendor_completions.d
+          - ^$"($env.PREFIX)/bin/tailscale" completion bash | save ($env.PREFIX)/share/bash-completion/completions/tailscale
+          - ^$"($env.PREFIX)/bin/tailscale" completion zsh | save ($env.PREFIX)/share/zsh/site-functions/_tailscale
+          - ^$"($env.PREFIX)/bin/tailscale" completion fish | save ($env.PREFIX)/share/fish/vendor_completions.d/tailscale.fish
+
+requirements:
+  build:
+    - nushell
+    - ${{ compiler('go-nocgo') }} >=1.22
+
+tests:
+  - script:
+      - tailscale version
+  - package_contents:
+      bin:
+        - tailscale
+      files:
+        - if: unix
+          then:
+            - share/bash-completion/completions/tailscale
+            - share/zsh/site-functions/_tailscale
+            - share/fish/vendor_completions.d/tailscale.fish
+      strict: true
+
+about:
+  homepage: https://tailscale.com
+  license: BSD-3-Clause
+  license_file:
+    - LICENSE
+    - licenses
+  summary: The easiest, most secure way to use WireGuard and 2FA.
+  documentation: https://tailscale.com/docs
+  repository: https://github.com/tailscale/tailscale
+
+extra:
+  recipe-maintainers:
+    - borchero
+    - yuikisaito
