@@ -20,8 +20,8 @@ build:
   script:
     interpreter: nu
     content:
-      - let version_git_hash = http get https://api.github.com/repos/tailscale/tailscale/commits/v${{ version }} | get sha
       - let version_short = "${{ version }}"
+      - let version_git_hash = git ls-remote https://github.com/tailscale/tailscale.git refs/tags/v($version_short)^{} | split row -r '\s+' | get 0
       - let version_long = $version_short + "-t" + ($version_git_hash | str substring 0..8)
       - let ldflags = $"-X tailscale.com/version.longStamp=($version_long) -X tailscale.com/version.shortStamp=($version_short) -X tailscale.com/version.gitCommitStamp=($version_git_hash)"
       - if: unix
@@ -44,6 +44,8 @@ requirements:
     - nushell
     - ${{ compiler('go-nocgo') }} >=1.22
     - go-licenses
+  host:
+    - git
 
 tests:
   - script:
