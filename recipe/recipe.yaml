@@ -1,7 +1,7 @@
 context:
   version: "1.98.2"
 
-package:
+recipe:
   name: tailscale
   version: ${{ version }}
 
@@ -17,49 +17,52 @@ source:
 
 build:
   number: 0
-  script:
-    interpreter: nu
-    content:
-      - let version_short = "${{ version }}"
-      - let version_git_hash = git ls-remote https://github.com/tailscale/tailscale.git refs/tags/v($version_short)^{} | split row -r '\s+' | get 0
-      - let version_long = $version_short + "-t" + ($version_git_hash | str substring 0..8)
-      - let ldflags = $"-X tailscale.com/version.longStamp=($version_long) -X tailscale.com/version.shortStamp=($version_short) -X tailscale.com/version.gitCommitStamp=($version_git_hash)"
-      - if: unix
-        then: let target_directory = ($env.PREFIX)/bin/
-        else: let target_directory = ($env.LIBRARY_BIN)/
-      - go build -v -buildvcs=false -ldflags $ldflags -o $target_directory ./cmd/tailscale
-      - go-licenses save ./cmd/tailscale --save_path ./thirdparty --ignore github.com/golang/freetype --ignore github.com/jmespath/go-jmespath
-      - mkdir ./thirdparty/github.com/golang/freetype ./thirdparty/github.com/jmespath/go-jmespath
-      - cp LICENSE-golang-freetype ./thirdparty/github.com/golang/freetype/LICENSE
-      - cp LICENSE-go-jmespath ./thirdparty/github.com/jmespath/go-jmespath/LICENSE
-      - if: unix
-        then:
-          - mkdir ($env.PREFIX)/share/bash-completion/completions ($env.PREFIX)/share/zsh/site-functions ($env.PREFIX)/share/fish/vendor_completions.d
-          - ^$"($env.PREFIX)/bin/tailscale" completion bash | save ($env.PREFIX)/share/bash-completion/completions/tailscale
-          - ^$"($env.PREFIX)/bin/tailscale" completion zsh | save ($env.PREFIX)/share/zsh/site-functions/_tailscale
-          - ^$"($env.PREFIX)/bin/tailscale" completion fish | save ($env.PREFIX)/share/fish/vendor_completions.d/tailscale.fish
 
-requirements:
-  build:
-    - nushell
-    - ${{ compiler('go-nocgo') }} >=1.22
-    - go-licenses
-  host:
-    - git
-
-tests:
-  - script:
-      - tailscale version
-  - package_contents:
-      bin:
-        - tailscale
-      files:
-        - if: unix
-          then:
-            - share/bash-completion/completions/tailscale
-            - share/zsh/site-functions/_tailscale
-            - share/fish/vendor_completions.d/tailscale.fish
-      strict: true
+outputs:
+  - package:
+      name: tailscale
+    build:
+      script:
+        interpreter: nu
+        content:
+          - let version_short = "${{ version }}"
+          - let version_git_hash = git ls-remote https://github.com/tailscale/tailscale.git refs/tags/v($version_short)^{} | split row -r '\s+' | get 0
+          - let version_long = $version_short + "-t" + ($version_git_hash | str substring 0..8)
+          - let ldflags = $"-X tailscale.com/version.longStamp=($version_long) -X tailscale.com/version.shortStamp=($version_short) -X tailscale.com/version.gitCommitStamp=($version_git_hash)"
+          - if: unix
+            then: let target_directory = ($env.PREFIX)/bin/
+            else: let target_directory = ($env.LIBRARY_BIN)/
+          - go build -v -buildvcs=false -ldflags $ldflags -o $target_directory ./cmd/tailscale
+          - go-licenses save ./cmd/tailscale --save_path ./thirdparty --ignore github.com/golang/freetype --ignore github.com/jmespath/go-jmespath
+          - mkdir ./thirdparty/github.com/golang/freetype ./thirdparty/github.com/jmespath/go-jmespath
+          - cp LICENSE-golang-freetype ./thirdparty/github.com/golang/freetype/LICENSE
+          - cp LICENSE-go-jmespath ./thirdparty/github.com/jmespath/go-jmespath/LICENSE
+          - if: unix
+            then:
+              - mkdir ($env.PREFIX)/share/bash-completion/completions ($env.PREFIX)/share/zsh/site-functions ($env.PREFIX)/share/fish/vendor_completions.d
+              - ^$"($env.PREFIX)/bin/tailscale" completion bash | save ($env.PREFIX)/share/bash-completion/completions/tailscale
+              - ^$"($env.PREFIX)/bin/tailscale" completion zsh | save ($env.PREFIX)/share/zsh/site-functions/_tailscale
+              - ^$"($env.PREFIX)/bin/tailscale" completion fish | save ($env.PREFIX)/share/fish/vendor_completions.d/tailscale.fish
+    requirements:
+      build:
+        - nushell
+        - ${{ compiler('go-nocgo') }} >=1.22
+        - go-licenses
+      host:
+        - git
+    tests:
+      - script:
+          - tailscale version
+      - package_contents:
+          bin:
+            - tailscale
+          files:
+            - if: unix
+              then:
+                - share/bash-completion/completions/tailscale
+                - share/zsh/site-functions/_tailscale
+                - share/fish/vendor_completions.d/tailscale.fish
+          strict: true
 
 about:
   homepage: https://tailscale.com
