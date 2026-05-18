@@ -28,7 +28,7 @@ outputs:
           - let version_short = "${{ version }}"
           - let version_git_hash = git ls-remote https://github.com/tailscale/tailscale.git refs/tags/v($version_short)^{} | split row -r '\s+' | get 0
           - let version_long = $version_short + "-t" + ($version_git_hash | str substring 0..8)
-          - let ldflags = $"-X tailscale.com/version.longStamp=($version_long) -X tailscale.com/version.shortStamp=($version_short) -X tailscale.com/version.gitCommitStamp=($version_git_hash)"
+          - let ldflags = $"-s -w -X tailscale.com/version.longStamp=($version_long) -X tailscale.com/version.shortStamp=($version_short) -X tailscale.com/version.gitCommitStamp=($version_git_hash)"
           - if: unix
             then: let target_directory = ($env.PREFIX)/bin/
             else: let target_directory = ($env.LIBRARY_BIN)/
@@ -73,7 +73,7 @@ outputs:
           - let version_short = "${{ version }}"
           - let version_git_hash = git ls-remote https://github.com/tailscale/tailscale.git refs/tags/v($version_short)^{} | split row -r '\s+' | get 0
           - let version_long = $version_short + "-t" + ($version_git_hash | str substring 0..8)
-          - let ldflags = $"-X tailscale.com/version.longStamp=($version_long) -X tailscale.com/version.shortStamp=($version_short) -X tailscale.com/version.gitCommitStamp=($version_git_hash)"
+          - let ldflags = $"-s -w -X tailscale.com/version.longStamp=($version_long) -X tailscale.com/version.shortStamp=($version_short) -X tailscale.com/version.gitCommitStamp=($version_git_hash)"
           - if: unix
             then: let target_directory = ($env.PREFIX)/bin/
             else: let target_directory = ($env.LIBRARY_BIN)/
