@@ -79,6 +79,7 @@ Current release info
 | Name | Downloads | Version | Platforms |
 | --- | --- | --- | --- |
 | [![Conda Recipe](https://img.shields.io/badge/recipe-tailscale-green.svg)](https://anaconda.org/conda-forge/tailscale) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/tailscale.svg)](https://anaconda.org/conda-forge/tailscale) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/tailscale.svg)](https://anaconda.org/conda-forge/tailscale) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/tailscale.svg)](https://anaconda.org/conda-forge/tailscale) |
+| [![Conda Recipe](https://img.shields.io/badge/recipe-tailscaled-green.svg)](https://anaconda.org/conda-forge/tailscaled) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/tailscaled.svg)](https://anaconda.org/conda-forge/tailscaled) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/tailscaled.svg)](https://anaconda.org/conda-forge/tailscaled) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/tailscaled.svg)](https://anaconda.org/conda-forge/tailscaled) |
 
 Installing tailscale
 ====================
@@ -90,16 +91,16 @@ conda config --add channels conda-forge
 conda config --set channel_priority strict
 ```
 
-Once the `conda-forge` channel has been enabled, `tailscale` can be installed with `conda`:
+Once the `conda-forge` channel has been enabled, `tailscale, tailscaled` can be installed with `conda`:
 
 ```
-conda install tailscale
+conda install tailscale tailscaled
 ```
 
 or with `mamba`:
 
 ```
-mamba install tailscale
+mamba install tailscale tailscaled
 ```
 
 It is possible to list all of the versions of `tailscale` available on your platform with `conda`:
