@@ -64,6 +64,38 @@ outputs:
                 - share/fish/vendor_completions.d/tailscale.fish
           strict: true
 
+  - package:
+      name: tailscaled
+    build:
+      script:
+        interpreter: nu
+        content:
+          - let version_short = "${{ version }}"
+          - let version_git_hash = git ls-remote https://github.com/tailscale/tailscale.git refs/tags/v($version_short)^{} | split row -r '\s+' | get 0
+          - let version_long = $version_short + "-t" + ($version_git_hash | str substring 0..8)
+          - let ldflags = $"-X tailscale.com/version.longStamp=($version_long) -X tailscale.com/version.shortStamp=($version_short) -X tailscale.com/version.gitCommitStamp=($version_git_hash)"
+          - if: unix
+            then: let target_directory = ($env.PREFIX)/bin/
+            else: let target_directory = ($env.LIBRARY_BIN)/
+          - go build -v -buildvcs=false -ldflags $ldflags -o $target_directory ./cmd/tailscaled
+          - go-licenses save ./cmd/tailscaled --save_path ./thirdparty --ignore github.com/jmespath/go-jmespath
+          - mkdir ./thirdparty/github.com/jmespath/go-jmespath
+          - cp LICENSE-go-jmespath ./thirdparty/github.com/jmespath/go-jmespath/LICENSE
+    requirements:
+      build:
+        - nushell
+        - ${{ compiler('go-nocgo') }} >=1.22
+        - go-licenses
+      host:
+        - git
+    tests:
+      - script:
+          - tailscaled -version
+      - package_contents:
+          bin:
+            - tailscaled
+          strict: true
+
 about:
   homepage: https://tailscale.com
   license: BSD-3-Clause
