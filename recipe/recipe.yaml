@@ -1,5 +1,5 @@
 context:
-  version: "1.98.4"
+  version: "1.98.5"
 
 recipe:
   name: tailscale
@@ -7,7 +7,7 @@ recipe:
 
 source:
   - url: https://github.com/tailscale/tailscale/archive/refs/tags/v${{ version }}.tar.gz
-    sha256: 5ef0d8f3cc3d18729f4ad24b48e8fd9b79ce7865224bf101d4de92826d230883
+    sha256: 58407eb29a1d5a6f5baf3784ac6d3e3d55e0af514e012f2cde1c6afbc5e6bcea
   - url: https://raw.githubusercontent.com/golang/freetype/e2365dfdc4a05e4b8299a783240d4a7d5a65d4e4/LICENSE
     sha256: d3ba056adc2b7909e95681deaae397fb37c97ed491a920f491214f07b62c41d0
     file_name: LICENSE-golang-freetype
