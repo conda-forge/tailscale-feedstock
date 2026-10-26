@@ -84,7 +84,7 @@ outputs:
     requirements:
       build:
         - nushell
-        - ${{ compiler('go-nocgo') }} >=1.22
+        - ${{ compiler('go-nocgo') }} >=1.23
         - go-licenses
       host:
         - git
